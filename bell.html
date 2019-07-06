@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<title>blah</title>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300&display=swap" rel="stylesheet">
+
+<!--
+	TODO:
+X	Logikken som velge om .passed blabla e feil, skjønna ikkje at ikkje alle felta treng være mindre...
+X	dytte opp kolona kanskje.
+X	lage kolona grå eller samme farge som teksten (ja).
+x	mindre avstand mellom kolona?
+	...mobile.. kanskje.. kanskje ikkje før det blir meir nyttig, he jo alarmen på mobilen.
+X	mindre knapp kanskje
+X	merk all teksten i inputs når den får keyboard fokus? skjer kanskje automatisk, så berre:
+X	gi første input elementet keyboard fokus når en trykke på knappen (eller andre?)
+-->
+
+<style>
+	* {
+		font-family: "Open Sans", Helvetica, Arial, sans-serif;
+		font-weight: 300;
+		box-sizing: border-box;
+		font-size: 40px;
+		
+	}
+
+	/* Remove spinners from number inputs in webkit browsers */
+	input[type=number]::-webkit-inner-spin-button, 
+	input[type=number]::-webkit-outer-spin-button { 
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+		margin: 0; 
+	}
+
+	html, body {
+		height: 100%;
+		margin: 0;
+	}
+
+	html {
+		display: flex;
+		justify-items: center;
+		align-items: center;
+		justify-content: center;
+		align-content: center;
+	}
+
+	body {
+		display: flex;
+		align-items: center;
+	}
+
+	input {
+		background: white;
+		text-align: center;
+		width: 70px;
+		outline:0;
+	}
+
+	input:disabled {
+		color: black;
+		border: 0;
+		border-bottom: 1px solid white;
+		/* removes bouncing inside flexbox when adding dotted border dynamically */
+	}
+
+	span.digit {
+		border-bottom: 1px solid white;
+	}
+
+	input:enabled {
+		color: black;
+		border: 0;	
+		border-bottom: 1px dotted grey;
+	}
+
+	form.passed input,
+	form.passed span.separator {
+		color: lightgrey;
+	}
+
+	form.editing input,
+	form.editing span.separator {
+		color: black;
+	}
+
+	form {
+		display: flex;
+		width: 243px;
+		padding-right: 8px;
+		height: 100px;
+		justify-items: space-between;
+		align-items: center;
+		justify-content: flex-end;
+		align-content: center;
+		flex-wrap: wrap;
+		border-right: 1px dotted grey;
+	}
+
+	span.separator {
+		padding-bottom: 8px;
+	}
+
+	button {
+		background: #4599ff;
+		color: white;
+		border: 0;
+		outline: 0;
+		font-size: 16px;
+		letter-spacing: 1px;
+		width: 60px;
+		margin: 2px 11px;
+	}
+
+	button:active {
+		background: #6eb9ff;
+	}
+
+	div {
+		display: flex;
+		width: 235px;
+		height: 74px;
+		justify-items: space-between;
+		align-items: center;
+		justify-content: flex-end;
+		align-content: center;
+		flex-wrap: wrap;
+		margin-top: -30px;
+	}
+
+	div span.separator {
+		padding-bottom: 8px;
+	}
+
+	span.digit {
+		width: 70px;
+		text-align: center;
+	}
+</style>
+
+</head>
+<body>
+
+<!-- bell time -->
+
+<form id="bell" class="passed">
+	<input type="number" min="0" max="23" required class="digit" id="bell_hours"   value="00" disabled>
+	<span class="separator">:</span>
+	<input type="number" min="0" max="59" required class="digit" id="bell_minutes" value="00" disabled>
+	<span class="separator">:</span>
+	<input type="number" min="0" max="59" required class="digit" id="bell_seconds" value="00" disabled>
+	<button id="set_bell" type="submit">Set</button>
+</form>
+
+
+<!-- current time -->
+
+<div id="time" class="clock">
+	<span class="digit" id="time_hours">00</span>
+	<span class="separator">:</span>
+	<span class="digit" id="time_minutes">00</span>
+	<span class="separator">:</span	>
+	<span class="digit" id="time_seconds">00</span>
+</div>
+
+<script>
+	var bellSound = new Audio("attribute_rhodesmas.mp3");
+	// Bell sound by Rhodesmas, downloaded from freesound.org
+
+	let inputs = bell.querySelectorAll("input"); // For convenient access.
+
+
+	set_bell.addEventListener("click", (e) => {
+		e.preventDefault();
+
+		let formState = bell.firstElementChild.disabled; // Boolean for use as flip switch.
+
+		let bellString = bell_hours.value + bell_minutes.value + bell_seconds.value;
+		let timeString = time_hours.innerText + time_minutes.innerText + time_seconds.innerText;
+		
+		if (formState) {
+			// Input states were set to disabled, as in the initial and ordinary state.
+
+			inputs.forEach(input => {
+				input.disabled = false; // Enable inputs.
+				bell.classList.add("editing");
+				
+				// Fill form with values from the current time only if their values are in the past.
+				// This makes it more convenient to create a timer for a few minutes a head without having to
+				// fill in all the other values. But, it should not be done if the current bell time is in the
+				// future, meaning the user made a typo or want to adjust the current bell time, not reset it.
+				if (bellString < timeString) {
+					bell_hours.value   = time_hours.innerText;
+					bell_minutes.value = time_minutes.innerText;
+					bell_seconds.value = time_seconds.innerText;
+				}
+
+				bell_hours.select();
+			});
+		} else {
+			// Input states were set to enabled, for setting the bell timer.
+			// Transition to disabled (ordinary state).
+
+			bell.classList.remove("editing");
+
+			if (bell.checkValidity()) {
+				inputs.forEach(input => {
+					input.value = input.value.toString().padStart(2, "0");
+					input.disabled = true // Disable inputs again.
+				});
+			}
+
+			// Check if number entered is not already in the past before removing "passed" class.
+			if (bellString > timeString) {
+				bell.classList.remove("passed");
+			} else { bell.classList.add("passed"); }
+		}
+	});
+
+
+	function tick() {
+		// Updates the current time divs and decides whether to sound the bell.
+
+		let now = new Date();
+
+		time_hours.innerText   = now.getHours().toString().padStart(2, '0');
+		time_minutes.innerText = now.getMinutes().toString().padStart(2, '0');
+		time_seconds.innerText = now.getSeconds().toString().padStart(2, '0');
+
+		// If times match, and the user is not currently setting the bell time.
+		if (time_hours.innerText   == bell_hours.value
+		&&  time_minutes.innerText == bell_minutes.value
+		&&  time_seconds.innerText == bell_seconds.value
+		&&  bell.firstElementChild.disabled ) {
+
+			bell.classList.add("passed");
+			bellSound.play();
+		}
+	};
+
+	setInterval(tick, 1000); // tick() every second.
+
+	tick(); // Also tick() immediately, avoiding the initial 1 second interval.
+</script>
+</body>
+</html>
