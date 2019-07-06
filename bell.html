@@ -164,13 +164,13 @@
 	set_bell.addEventListener("click", (e) => {
 		e.preventDefault();
 
-		let formState = bell.firstElementChild.disabled; // Boolean for use as flip switch.
+		let formStateDisabled = bell.firstElementChild.disabled; // Boolean for use as flip switch.
 
 		let bellString = bell_hours.value + bell_minutes.value + bell_seconds.value;
 		let timeString = time_hours.innerText + time_minutes.innerText + time_seconds.innerText;
 		
-		if (formState) {
-			// Input states were set to disabled, as in the initial and ordinary state.
+		if (formStateDisabled) {
+			// Input states were set to disabled, as in the initial and ordinary state of the app.
 
 			inputs.forEach(input => {
 				input.disabled = false; // Enable inputs.
