@@ -6,11 +6,13 @@
 <link href="https://fonts.googleapis.com/css?family=Open+Sans:300&display=swap" rel="stylesheet">
 
 <style>
+	/* ====  Base styles, not changing with application states  ===== */
+	
 	* {
 		font-family: "Open Sans", Helvetica, Arial, sans-serif;
 		font-weight: 300;
-		box-sizing: border-box;
-		font-size: 40px;
+		box-sizing:  border-box;
+		font-size:   40px;
 		
 	}
 
@@ -29,39 +31,94 @@
 	}
 
 	html {
-		display: flex;
-		justify-items: center;
-		align-items: center;
+		display:         flex;
+		justify-items:   center;
+		align-items:     center;
 		justify-content: center;
-		align-content: center;
+		align-content:   center;
 	}
 
 	body {
-		display: flex;
+		display:     flex;
 		align-items: center;
 	}
 
 	input {
 		background: white;
 		text-align: center;
-		width: 70px;
-		outline:0;
-	}
-
-	input:disabled {
-		color: black;
-		border: 0;
-		border-bottom: 1px solid white;
-		/* removes bouncing inside flexbox when adding dotted border dynamically */
+		width:      70px;
+		outline:    0;
+		border:     0;
 	}
 
 	span.digit {
 		border-bottom: 1px solid white;
+		/* Invisible border aids alignment with other parts that gains a visible border dynamically */
+	}
+
+	form {
+		display:         flex;
+		width:           243px;
+		padding-right:   8px;
+		height:          100px;
+		justify-items:   space-between;
+		align-items:     center;
+		justify-content: flex-end;
+		align-content:   center;
+		flex-wrap:       wrap;
+		border-right:    1px dotted grey;
+	}
+
+	span.separator {
+		padding-bottom: 8px;
+	}
+
+	button {
+		background:     #4599ff;
+		color:          white;
+		border:         0;
+		outline:        0;
+		font-size:      16px;
+		letter-spacing: 1px;
+		width:          60px;
+		margin:         2px 11px;
+	}
+
+	button:active {
+		background: #6eb9ff;
+	}
+
+	div {
+		display:         flex;
+		width:           235px;
+		height:          74px;
+		justify-items:   space-between;
+		align-items:     center;
+		justify-content: flex-end;
+		align-content:   center;
+		flex-wrap:       wrap;
+		margin-top:      -30px;
+	}
+
+	div span.separator {
+		padding-bottom: 8px;
+	}
+
+	span.digit {
+		width:      70px;
+		text-align: center;
+	}
+
+
+	/* ====  State dependent styling  ==== */
+
+	input:disabled {
+		color:         black;
+		border-bottom: 1px solid white;
+		/* removes bouncing inside flexbox when adding dotted border dynamically */
 	}
 
 	input:enabled {
-		color: black;
-		border: 0;	
 		border-bottom: 1px dotted grey;
 	}
 
@@ -73,60 +130,9 @@
 	form.editing input,
 	form.editing span.separator {
 		color: black;
+		/* overrides the .passed class, simplifying state logic (fewer states and classes to add/remove) */
 	}
 
-	form {
-		display: flex;
-		width: 243px;
-		padding-right: 8px;
-		height: 100px;
-		justify-items: space-between;
-		align-items: center;
-		justify-content: flex-end;
-		align-content: center;
-		flex-wrap: wrap;
-		border-right: 1px dotted grey;
-	}
-
-	span.separator {
-		padding-bottom: 8px;
-	}
-
-	button {
-		background: #4599ff;
-		color: white;
-		border: 0;
-		outline: 0;
-		font-size: 16px;
-		letter-spacing: 1px;
-		width: 60px;
-		margin: 2px 11px;
-	}
-
-	button:active {
-		background: #6eb9ff;
-	}
-
-	div {
-		display: flex;
-		width: 235px;
-		height: 74px;
-		justify-items: space-between;
-		align-items: center;
-		justify-content: flex-end;
-		align-content: center;
-		flex-wrap: wrap;
-		margin-top: -30px;
-	}
-
-	div span.separator {
-		padding-bottom: 8px;
-	}
-
-	span.digit {
-		width: 70px;
-		text-align: center;
-	}
 </style>
 
 </head>
@@ -166,7 +172,7 @@
 
 		let formStateDisabled = bell.firstElementChild.disabled; // Boolean for use as flip switch.
 
-		let bellString = bell_hours.value + bell_minutes.value + bell_seconds.value;
+		let bellString = bell_hours.value     + bell_minutes.value     + bell_seconds.value;
 		let timeString = time_hours.innerText + time_minutes.innerText + time_seconds.innerText;
 		
 		if (formStateDisabled) {
@@ -232,6 +238,7 @@
 	setInterval(tick, 1000); // tick() every second.
 
 	tick(); // Also tick() immediately, avoiding the initial 1 second interval.
+
 </script>
 </body>
 </html>
