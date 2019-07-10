@@ -224,11 +224,14 @@
 		time_minutes.innerText = now.getMinutes().toString().padStart(2, '0');
 		time_seconds.innerText = now.getSeconds().toString().padStart(2, '0');
 
-		// If times match, and the user is not currently setting the bell time.
-		if (time_hours.innerText   == bell_hours.value
-		&&  time_minutes.innerText == bell_minutes.value
-		&&  time_seconds.innerText == bell_seconds.value
-		&&  bell.firstElementChild.disabled ) {
+		// 1: If times match,
+		// 2: and the user is not currently setting the bell time,
+		// 3: and the bell has not already rang for that time some other day the tab was open.
+		if (time_hours.innerText   == bell_hours.value		// 1.
+		&&  time_minutes.innerText == bell_minutes.value	//
+		&&  time_seconds.innerText == bell_seconds.value	//
+		&&  bell.firstElementChild.disabled			// 2.
+		&&  !bell.classList.contains("passed") ) {		// 3.
 
 			bell.classList.add("passed");
 			bellSound.play();
