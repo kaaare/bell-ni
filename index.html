@@ -211,6 +211,11 @@
 			if (bellString > timeString) {
 				bell.classList.remove("passed");
 			} else { bell.classList.add("passed"); }
+			
+			// Make Edge deselect the input text if it was selected
+			// Issue: https://github.com/kaaare/bell-ni/issues/1#issue-492393167
+			window.getSelection().removeAllRanges();
+			
 		}
 	});
 
